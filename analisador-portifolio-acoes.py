@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import font
+from tkinter import ttk
 
 root = Tk()
 
@@ -10,6 +11,7 @@ class Application ():
         self.tela()
         self.frames()
         self.widgets()
+        self.lista_frameinf()
         root.mainloop()    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
@@ -50,7 +52,10 @@ class Application ():
         self.bt_cadastrar = Button(
             self.frameSup, 
             text="Cadastrar Ação", 
-            font= "helvetica 9 bold"
+            font= "helvetica 9 bold",
+            bd=3,
+            bg="#1e3743",
+            fg='white'
         )
         self.bt_cadastrar.place(
             relx=0.55,
@@ -61,7 +66,10 @@ class Application ():
         self.bt_analise = Button(
             self.frameSup, 
             text="Análise", 
-            font= "helvetica 10 bold"
+            font= "helvetica 10 bold",
+            bd=3,
+            bg="#1e3743",
+            fg='white'
         )
         self.bt_analise.place(
             relx=0.7,
@@ -72,7 +80,10 @@ class Application ():
         self.bt_limpar = Button(
             self.frameSup, 
             text="Limpar", 
-            font= "helvetica 10 bold"
+            font= "helvetica 10 bold",
+            bd=3,
+            bg="#1e3743",
+            fg='white'
         )
         self.bt_limpar.place(
             relx=0.85,
@@ -131,7 +142,7 @@ class Application ():
         )
         self.lb_comentarios = Label(
             self.frameSup, 
-            text="Comentarios", 
+            text="Comentários", 
             font="helvetica 9 bold"
             )
         self.lb_comentarios.place(
@@ -145,6 +156,39 @@ class Application ():
             relx=0.01,
             rely=0.8,
             relwidth=0.8
+        )
+    def lista_frameinf(self):
+        self.listaAcoes = ttk.Treeview(
+            self.frameInf,
+            height=3,
+            columns=("col1, col2, col3, col4")
+        ) 
+        self.listaAcoes.heading("#0", text="")
+        self.listaAcoes.heading("#1", text="Código da Ação")
+        self.listaAcoes.heading("#2", text="Número de Cotas")
+        self.listaAcoes.heading("#3", text="Data de Aquisição")
+        self.listaAcoes.heading("#4", text="Comentários")
+
+        self.listaAcoes.column("#0", width=1, stretch=NO)
+        self.listaAcoes.column("#1", width=110)
+        self.listaAcoes.column("#2", width=110)
+        self.listaAcoes.column("#3", width=150)
+        self.listaAcoes.column("#4", width=200)
+
+        self.listaAcoes.place(
+            relx=0.01, 
+            rely=0.1, 
+            relwidth=0.95, 
+            relheight=0.85
+            )
+       
+        self.scrollLista = Scrollbar(self.frameInf, orient='vertical')
+        self.listaAcoes.configure(yscroll=self.scrollLista.set)
+        self.scrollLista.place(
+            relx=0.96,
+            rely=0.1,
+            relwidth=0.04,
+            relheight=0.85
         )
         
 Application()
