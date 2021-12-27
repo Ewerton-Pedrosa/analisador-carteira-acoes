@@ -136,14 +136,15 @@ class Application ():
             )
         self.lb_comentarios.place(
             relx=0.01, 
-            rely=0.7
+            rely=0.7,            
             )
         self.entry_comentarios = Entry(
             self.frameSup
         )
         self.entry_comentarios.place(
             relx=0.01,
-            rely=0.8
+            rely=0.8,
+            relwidth=0.8
         )
         
 Application()
