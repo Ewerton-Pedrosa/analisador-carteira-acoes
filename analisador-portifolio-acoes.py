@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import font
 
 root = Tk()
 
@@ -16,7 +17,7 @@ class Application ():
         self.root.geometry("700x500")
         self.root.resizable(True,True)
         self.root.maxsize(width=900, height=700)
-        self.root.minsize(width=400, height=300)
+        self.root.minsize(width=650, height=550)
     def frames(self):
         self.frameSup = Frame(
             self.root, 
@@ -45,15 +46,15 @@ class Application ():
             relheight=0.42
             )
     def widgets(self):
-        # ---------------- BOTÕES -------------------------
+        # -------------------- BOTÕES --------------------
         self.bt_cadastrar = Button(
             self.frameSup, 
             text="Cadastrar Ação", 
             font= "helvetica 9 bold"
         )
         self.bt_cadastrar.place(
-            relx=0.2,
-            rely=0.1,
+            relx=0.55,
+            rely=0.05,
             relwidth=0.15,
             relheight=0.15
         )
@@ -63,11 +64,86 @@ class Application ():
             font= "helvetica 10 bold"
         )
         self.bt_analise.place(
-            relx=0.4,
-            rely=0.1,
+            relx=0.7,
+            rely=0.05,
             relwidth=0.15,
             relheight=0.15
         )
+        self.bt_limpar = Button(
+            self.frameSup, 
+            text="Limpar", 
+            font= "helvetica 10 bold"
+        )
+        self.bt_limpar.place(
+            relx=0.85,
+            rely=0.05,
+            relwidth=0.15,
+            relheight=0.15
+        )
+        # -------------------- LABELS E ENTRYS --------------------
+        self.lb_acao = Label(
+            self.frameSup, 
+            text="Código da Ação", 
+            font="helvetica 9 bold"
+            )
+        self.lb_acao.place(
+            relx=0.01, 
+            rely=0.1
+            )
+        self.entry_acao = Entry(
+            self.frameSup
+        )
+        self.entry_acao.place(
+            relx=0.01,
+            rely=0.2
+        )
+        self.lb_cotas = Label(
+            self.frameSup, 
+            text="Quantidade de Cotas", 
+            font="helvetica 9 bold"
+            )
+        self.lb_cotas.place(
+            relx=0.01, 
+            rely=0.3
+            )
+        self.entry_cotas = Entry(
+            self.frameSup
+        )
+        self.entry_cotas.place(
+            relx=0.01,
+            rely=0.4
+        )
+        self.lb_dataAquisicao = Label(
+            self.frameSup, 
+            text="Data de Aquisição", 
+            font="helvetica 9 bold"
+            )
+        self.lb_dataAquisicao.place(
+            relx=0.01, 
+            rely=0.5
+            )
+        self.entry_dataAquisicao = Entry(
+            self.frameSup
+        )
+        self.entry_dataAquisicao.place(
+            relx=0.01,
+            rely=0.6
+        )
+        self.lb_comentarios = Label(
+            self.frameSup, 
+            text="Comentarios", 
+            font="helvetica 9 bold"
+            )
+        self.lb_comentarios.place(
+            relx=0.01, 
+            rely=0.7
+            )
+        self.entry_comentarios = Entry(
+            self.frameSup
+        )
+        self.entry_comentarios.place(
+            relx=0.01,
+            rely=0.8
+        )
         
-
 Application()
