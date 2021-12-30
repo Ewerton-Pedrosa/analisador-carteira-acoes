@@ -87,7 +87,8 @@ class Application ():
             font= "helvetica 10 bold",
             bd=3,
             bg="#1e3743",
-            fg='white'
+            fg='white',
+            command=self.limpar_entrys
         )
         self.bt_limpar.place(
             relx=0.85,
@@ -203,5 +204,5 @@ class Application ():
         self.entry_cotas.delete(0, END)
         self.entry_dataAquisicao.delete(0, END)
         self.entry_comentarios.delete(0, END)
-
+        
 Application()
