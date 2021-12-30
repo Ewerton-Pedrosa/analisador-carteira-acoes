@@ -11,7 +11,8 @@ class Application ():
         self.tela()
         self.frames()
         self.widgets()
-        self.lista_frameinf()
+        self.lista_frameinf()  
+        self.variaveis()      
         root.mainloop()    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
@@ -20,6 +21,8 @@ class Application ():
         self.root.resizable(True,True)
         self.root.maxsize(width=900, height=700)
         self.root.minsize(width=650, height=550)
+    def variaveis(self):
+        self.cont = 0
     def frames(self):
         self.frameSup = Frame(
             self.root, 
@@ -55,7 +58,8 @@ class Application ():
             font= "helvetica 9 bold",
             bd=3,
             bg="#1e3743",
-            fg='white'
+            fg='white',
+            command= self.lista_dados
         )
         self.bt_cadastrar.place(
             relx=0.55,
@@ -190,5 +194,14 @@ class Application ():
             relwidth=0.04,
             relheight=0.85
         )
-        
+    def lista_dados(self):                       
+        self.listaAcoes.insert(parent='', index='end', iid=self.cont, values=(self.entry_acao.get(),self.entry_cotas.get(), self.entry_dataAquisicao.get(), self.entry_comentarios.get()))
+        self.cont +=1
+        self.limpar_entrys()
+    def limpar_entrys(self):
+        self.entry_acao.delete(0, END)
+        self.entry_cotas.delete(0, END)
+        self.entry_dataAquisicao.delete(0, END)
+        self.entry_comentarios.delete(0, END)
+
 Application()
