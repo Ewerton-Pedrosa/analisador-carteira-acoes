@@ -1,6 +1,9 @@
 from tkinter import *
 from tkinter import font
 from tkinter import ttk
+from pandas_datareader import data as web
+from datetime import datetime
+from sys import displayhook
 
 root = Tk()
 
@@ -12,7 +15,8 @@ class Application ():
         self.frames()
         self.widgets()
         self.lista_frameinf()  
-        self.variaveis()      
+        self.variaveis() 
+        self.graficos()  
         root.mainloop()    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
@@ -54,13 +58,13 @@ class Application ():
         # -------------------- ABAS --------------------
         self.abas = ttk.Notebook(self.frameSup)
         self.abaCadastro = Frame(self.abas)
-        self.abaAnalise = Frame(self.abas)
+        self.abaAnaliseGeral = Frame(self.abas)
 
         self.abaCadastro.configure(background='#e8f1f2')
-        self.abaAnalise.configure(background='#e8f1f2')
+        self.abaAnaliseGeral.configure(background='#e8f1f2')
 
         self.abas.add(self.abaCadastro, text='Cadastro')
-        self.abas.add(self.abaAnalise, text='Análise')
+        self.abas.add(self.abaAnaliseGeral, text='Análise Geral')
 
         self.abas.place(
             relx=0,
@@ -225,13 +229,16 @@ class Application ():
                 )
             )
         self.cont +=1
-
+        self.graficos()
         self.limpar_entrys()
-
     def limpar_entrys(self):
         self.entry_acao.delete(0, END)
         self.entry_cotas.delete(0, END)
         self.entry_dataAquisicao.delete(0, END)
         self.entry_comentarios.delete(0, END)
-        
+    def graficos(self):
+        if self.cont != 0 :
+            self.cotacao_acao = web.DataReader(self.entry_acao.get() + '.SA', data_source='yahoo', start=self.entry_dataAquisicao.get(), end=datetime.today().strftime('%m-%d-%Y'))
+            displayhook(self.cotacao_acao)
+                
 Application()
