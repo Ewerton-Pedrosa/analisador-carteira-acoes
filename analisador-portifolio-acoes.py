@@ -35,7 +35,7 @@ class Application ():
             relx= 0.02, 
             rely=0.1, 
             relwidth=0.96, 
-            relheight=0.42
+            relheight=0.62
             )
         self.frameInf = Frame(
             self.root, 
@@ -46,14 +46,31 @@ class Application ():
             )
         self.frameInf.place(
             relx= 0.02, 
-            rely=0.54, 
+            rely=0.73, 
             relwidth=0.96, 
-            relheight=0.42
+            relheight=0.26
             )
     def widgets(self):
+        # -------------------- ABAS --------------------
+        self.abas = ttk.Notebook(self.frameSup)
+        self.abaCadastro = Frame(self.abas)
+        self.abaAnalise = Frame(self.abas)
+
+        self.abaCadastro.configure(background='#e8f1f2')
+        self.abaAnalise.configure(background='#e8f1f2')
+
+        self.abas.add(self.abaCadastro, text='Cadastro')
+        self.abas.add(self.abaAnalise, text='Análise')
+
+        self.abas.place(
+            relx=0,
+            rely=0,
+            relwidth=1,
+            relheight=1
+        )
         # -------------------- BOTÕES --------------------
         self.bt_cadastrar = Button(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Cadastrar Ação", 
             font= "helvetica 9 bold",
             bd=3,
@@ -68,7 +85,7 @@ class Application ():
             relheight=0.15
         )
         self.bt_analise = Button(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Análise", 
             font= "helvetica 10 bold",
             bd=3,
@@ -82,7 +99,7 @@ class Application ():
             relheight=0.15
         )
         self.bt_limpar = Button(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Limpar", 
             font= "helvetica 10 bold",
             bd=3,
@@ -98,7 +115,7 @@ class Application ():
         )
         # -------------------- LABELS E ENTRYS --------------------
         self.lb_acao = Label(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Código da Ação", 
             font="helvetica 9 bold"
             )
@@ -107,14 +124,14 @@ class Application ():
             rely=0.1
             )
         self.entry_acao = Entry(
-            self.frameSup
+            self.abaCadastro
         )
         self.entry_acao.place(
             relx=0.01,
             rely=0.2
         )
         self.lb_cotas = Label(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Quantidade de Cotas", 
             font="helvetica 9 bold"
             )
@@ -123,14 +140,14 @@ class Application ():
             rely=0.3
             )
         self.entry_cotas = Entry(
-            self.frameSup
+            self.abaCadastro
         )
         self.entry_cotas.place(
             relx=0.01,
             rely=0.4
         )
         self.lb_dataAquisicao = Label(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Data de Aquisição", 
             font="helvetica 9 bold"
             )
@@ -139,14 +156,14 @@ class Application ():
             rely=0.5
             )
         self.entry_dataAquisicao = Entry(
-            self.frameSup
+            self.abaCadastro
         )
         self.entry_dataAquisicao.place(
             relx=0.01,
             rely=0.6
         )
         self.lb_comentarios = Label(
-            self.frameSup, 
+            self.abaCadastro, 
             text="Comentários", 
             font="helvetica 9 bold"
             )
@@ -155,7 +172,7 @@ class Application ():
             rely=0.7,            
             )
         self.entry_comentarios = Entry(
-            self.frameSup
+            self.abaCadastro
         )
         self.entry_comentarios.place(
             relx=0.01,
@@ -196,9 +213,21 @@ class Application ():
             relheight=0.85
         )
     def lista_dados(self):                       
-        self.listaAcoes.insert(parent='', index='end', iid=self.cont, values=(self.entry_acao.get(),self.entry_cotas.get(), self.entry_dataAquisicao.get(), self.entry_comentarios.get()))
+        self.listaAcoes.insert(
+            parent='',
+            index='end', 
+            iid=self.cont, 
+            values=(
+                self.entry_acao.get(),
+                self.entry_cotas.get(), 
+                self.entry_dataAquisicao.get(), 
+                self.entry_comentarios.get()
+                )
+            )
         self.cont +=1
+
         self.limpar_entrys()
+
     def limpar_entrys(self):
         self.entry_acao.delete(0, END)
         self.entry_cotas.delete(0, END)
