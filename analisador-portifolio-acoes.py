@@ -4,6 +4,8 @@ from tkinter import ttk
 from pandas_datareader import data as web
 from datetime import datetime
 from sys import displayhook
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 root = Tk()
 
@@ -27,6 +29,9 @@ class Application ():
         self.root.minsize(width=650, height=550)
     def variaveis(self):
         self.cont = 0
+        self.montanteInicial = []
+        self.montanteHoje = []
+        self.portifolio = []
     def frames(self):
         self.frameSup = Frame(
             self.root, 
@@ -238,7 +243,37 @@ class Application ():
         self.entry_comentarios.delete(0, END)
     def graficos(self):
         if self.cont != 0 :
-            self.cotacao_acao = web.DataReader(self.entry_acao.get() + '.SA', data_source='yahoo', start=self.entry_dataAquisicao.get(), end=datetime.today().strftime('%m-%d-%Y'))
-            displayhook(self.cotacao_acao)
-                
+            self.cotacaoAcao = web.DataReader(
+                self.entry_acao.get() + '.SA', 
+                data_source='yahoo', 
+                start=self.entry_dataAquisicao.get(), 
+                end=datetime.today().strftime('%m-%d-%Y')
+                )
+            self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
+            self.montanteHoje.append(round(float(self.cotacaoAcao['Adj Close'].iloc[-1])*int(self.entry_cotas.get()), 2))  
+            self.portifolio.append(self.entry_acao.get().upper())
+            print(f'Esse é o montante hoje: R$ {self.montanteHoje}')
+            print(f'Esse é o montante inicial: R$ {self.montanteInicial}') 
+            print(f'Esse é o Portifólio de Ações: {self.portifolio}') 
+
+            # -------------------- FIGURA INTEGRADA A ABA ANALISE --------------------
+            self.figura = plt.figure(
+                figsize= (6, 3), 
+                dpi=60
+                )
+            self.grafico = self.figura.add_subplot(111)
+
+            self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseGeral )
+            self.canva.get_tk_widget().place(
+                relx=0.01,
+                rely=0.01                
+            )
+            plt.pie(
+                x=self.montanteHoje,
+                labels=self.portifolio,
+                autopct='%1.1f%%',
+                startangle=90
+                )
+            
+            
 Application()
