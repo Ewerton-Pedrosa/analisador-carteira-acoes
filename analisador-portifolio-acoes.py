@@ -66,7 +66,7 @@ class Application ():
         self.abaAnaliseGeral = Frame(self.abas)
 
         self.abaCadastro.configure(background='#e8f1f2')
-        self.abaAnaliseGeral.configure(background='#e8f1f2')
+        self.abaAnaliseGeral.configure(background='white')
 
         self.abas.add(self.abaCadastro, text='Cadastro')
         self.abas.add(self.abaAnaliseGeral, text='Análise Geral')
@@ -262,17 +262,19 @@ class Application ():
                 dpi=60
                 )
             self.grafico = self.figura.add_subplot(111)
-
             self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseGeral )
             self.canva.get_tk_widget().place(
                 relx=0.01,
-                rely=0.01                
+                rely=0.01, 
+                relwidth=0.45,
+                relheight=0.45               
             )
             plt.pie(
                 x=self.montanteHoje,
                 labels=self.portifolio,
                 autopct='%1.1f%%',
-                startangle=90
+                startangle=90,
+                shadow=True
                 )
             
             
