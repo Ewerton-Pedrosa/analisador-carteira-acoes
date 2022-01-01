@@ -23,9 +23,9 @@ class Application ():
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
         self.root.configure(background='#1e3743')
-        self.root.geometry("700x500")
+        self.root.geometry("800x550")
         self.root.resizable(True,True)
-        self.root.maxsize(width=900, height=700)
+        self.root.maxsize(width=1200, height=900)
         self.root.minsize(width=650, height=550)
     def variaveis(self):
         self.cont = 0
@@ -132,9 +132,7 @@ class Application ():
             relx=0.01, 
             rely=0.1
             )
-        self.entry_acao = Entry(
-            self.abaCadastro
-        )
+        self.entry_acao = Entry(self.abaCadastro)
         self.entry_acao.place(
             relx=0.01,
             rely=0.2
@@ -148,9 +146,7 @@ class Application ():
             relx=0.01, 
             rely=0.3
             )
-        self.entry_cotas = Entry(
-            self.abaCadastro
-        )
+        self.entry_cotas = Entry(self.abaCadastro)
         self.entry_cotas.place(
             relx=0.01,
             rely=0.4
@@ -164,9 +160,7 @@ class Application ():
             relx=0.01, 
             rely=0.5
             )
-        self.entry_dataAquisicao = Entry(
-            self.abaCadastro
-        )
+        self.entry_dataAquisicao = Entry(self.abaCadastro)
         self.entry_dataAquisicao.place(
             relx=0.01,
             rely=0.6
@@ -180,31 +174,32 @@ class Application ():
             relx=0.01, 
             rely=0.7,            
             )
-        self.entry_comentarios = Entry(
-            self.abaCadastro
-        )
+        self.entry_comentarios = Entry(self.abaCadastro)
         self.entry_comentarios.place(
             relx=0.01,
             rely=0.8,
             relwidth=0.8
         )
+    
     def lista_frameinf(self):
         self.listaAcoes = ttk.Treeview(
             self.frameInf,
             height=3,
-            columns=("col1, col2, col3, col4")
+            columns=("col1, col2, col3, col4, col5")
         ) 
-        self.listaAcoes.heading("#0", text="")
-        self.listaAcoes.heading("#1", text="Código da Ação")
-        self.listaAcoes.heading("#2", text="Número de Cotas")
-        self.listaAcoes.heading("#3", text="Data de Aquisição")
-        self.listaAcoes.heading("#4", text="Comentários")
+        self.listaAcoes.heading("#0", text="", anchor=CENTER)
+        self.listaAcoes.heading("#1", text="Código da Ação", anchor=CENTER)
+        self.listaAcoes.heading("#2", text="Número de Cotas", anchor=CENTER)
+        self.listaAcoes.heading("#3", text="Data de Aquisição", anchor=CENTER)
+        self.listaAcoes.heading("#4", text="Investimento em R$", anchor=CENTER)
+        self.listaAcoes.heading("#5", text="Comentários", anchor=CENTER)
 
-        self.listaAcoes.column("#0", width=1, stretch=NO)
-        self.listaAcoes.column("#1", width=110)
-        self.listaAcoes.column("#2", width=110)
-        self.listaAcoes.column("#3", width=150)
-        self.listaAcoes.column("#4", width=200)
+        self.listaAcoes.column("#0", width=1, stretch=NO, anchor=CENTER)
+        self.listaAcoes.column("#1", width=110, anchor=CENTER)
+        self.listaAcoes.column("#2", width=80, anchor=CENTER)
+        self.listaAcoes.column("#3", width=130, anchor=CENTER)
+        self.listaAcoes.column("#4", width=100, anchor=CENTER)
+        self.listaAcoes.column("#5", width=150, anchor=CENTER)
 
         self.listaAcoes.place(
             relx=0.01, 
@@ -221,17 +216,32 @@ class Application ():
             relwidth=0.04,
             relheight=0.85
         )
-    def lista_dados(self):                       
+    def lista_dados(self):
+        # -------------------- CONSULTA API --------------------        
+        self.cotacaoAcao = web.DataReader(
+            self.entry_acao.get() + '.SA', 
+            data_source='yahoo', 
+            start=self.entry_dataAquisicao.get(), 
+            end=datetime.today().strftime('%m-%d-%Y')
+            )
+        self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
+        self.montanteHoje.append(round(float(self.cotacaoAcao['Adj Close'].iloc[-1])*int(self.entry_cotas.get()), 2))  
+        self.portifolio.append(self.entry_acao.get().upper())
+        print(f'Esse é o montante hoje: R$ {self.montanteHoje}')
+        print(f'Esse é o montante inicial: R$ {self.montanteInicial}') 
+        print(f'Esse é o Portifólio de Ações: {self.portifolio}') 
+        # -------------------- DADOS NA TREE VIEW --------------------                       
         self.listaAcoes.insert(
             parent='',
             index='end', 
             iid=self.cont, 
             values=(
-                self.entry_acao.get(),
+                self.entry_acao.get().upper(),
                 self.entry_cotas.get(), 
-                self.entry_dataAquisicao.get(), 
+                self.entry_dataAquisicao.get(),
+                'R$'+str(self.montanteInicial[self.cont]), 
                 self.entry_comentarios.get()
-                )
+                )            
             )
         self.cont +=1
         self.graficos()
@@ -241,21 +251,7 @@ class Application ():
         self.entry_cotas.delete(0, END)
         self.entry_dataAquisicao.delete(0, END)
         self.entry_comentarios.delete(0, END)
-    def graficos(self):
-        if self.cont != 0 :
-            self.cotacaoAcao = web.DataReader(
-                self.entry_acao.get() + '.SA', 
-                data_source='yahoo', 
-                start=self.entry_dataAquisicao.get(), 
-                end=datetime.today().strftime('%m-%d-%Y')
-                )
-            self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
-            self.montanteHoje.append(round(float(self.cotacaoAcao['Adj Close'].iloc[-1])*int(self.entry_cotas.get()), 2))  
-            self.portifolio.append(self.entry_acao.get().upper())
-            print(f'Esse é o montante hoje: R$ {self.montanteHoje}')
-            print(f'Esse é o montante inicial: R$ {self.montanteInicial}') 
-            print(f'Esse é o Portifólio de Ações: {self.portifolio}') 
-
+    def graficos(self):        
             # -------------------- FIGURA INTEGRADA A ABA ANALISE --------------------
             self.figura = plt.figure(
                 figsize= (6, 3), 
@@ -276,6 +272,15 @@ class Application ():
                 startangle=90,
                 shadow=True
                 )
+            self.totalInvestido = Label(
+                self.abaAnaliseGeral,
+                text='Total Investido',
+                background='white'
+                )
+            self.totalInvestido.place(
+                relx=0.01,
+                rely=0.75,                
+            )
             
             
 Application()
