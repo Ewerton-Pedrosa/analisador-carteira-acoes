@@ -17,8 +17,7 @@ class Application ():
         self.frames()
         self.widgets()
         self.lista_frameinf()  
-        self.variaveis() 
-        self.graficos()  
+        self.variaveis()          
         root.mainloop()    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
@@ -252,7 +251,7 @@ class Application ():
         self.entry_dataAquisicao.delete(0, END)
         self.entry_comentarios.delete(0, END)
     def graficos(self):        
-            # -------------------- FIGURA INTEGRADA A ABA ANALISE --------------------
+            # -------------------- GRAFICO INVESTIMENTO INICIAL INTEGRADO A ABA ANALISE --------------------
             self.figura = plt.figure(
                 figsize= (6, 3), 
                 dpi=60
@@ -262,8 +261,44 @@ class Application ():
             self.canva.get_tk_widget().place(
                 relx=0.01,
                 rely=0.01, 
-                relwidth=0.45,
-                relheight=0.45               
+                relwidth=0.5,
+                relheight=0.5               
+            )
+            plt.pie(
+                x=self.montanteInicial,
+                labels=self.portifolio,
+                autopct='%1.1f%%',
+                startangle=90,
+                shadow=True
+                )
+            self.lb_totalInvestido = Label(
+                self.abaAnaliseGeral,
+                text='Total Investido',
+                font='helvetica 11 bold',
+                background='white'
+                )
+            self.lb_totalInvestido.place(
+                relx=0.05,
+                rely=0.75,                
+            )
+            self.entry_totalInvestido = Entry(self.abaAnaliseGeral)
+            self.entry_totalInvestido.place(
+                relx=0.045,
+                rely=0.85
+            )
+            self.entry_totalInvestido.insert(0, f'R$ {sum(self.montanteInicial):.2f}')
+             # -------------------- GRAFICO INVESTIMENTO INICIAL INTEGRADO A ABA ANALISE --------------------
+            self.figura = plt.figure(
+                figsize= (6, 3), 
+                dpi=60
+                )
+            self.grafico = self.figura.add_subplot(111)
+            self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseGeral )
+            self.canva.get_tk_widget().place(
+                relx=0.45,
+                rely=0.01, 
+                relwidth=0.5,
+                relheight=0.5               
             )
             plt.pie(
                 x=self.montanteHoje,
@@ -271,16 +306,21 @@ class Application ():
                 autopct='%1.1f%%',
                 startangle=90,
                 shadow=True
-                )
-            self.totalInvestido = Label(
+            )
+            self.lb_totalInvestido = Label(
                 self.abaAnaliseGeral,
-                text='Total Investido',
+                text='Total Acumulado',
+                font='helvetica 11 bold',
                 background='white'
                 )
-            self.totalInvestido.place(
-                relx=0.01,
+            self.lb_totalInvestido.place(
+                relx=0.5,
                 rely=0.75,                
             )
-            
-            
+            self.entry_totalInvestido = Entry(self.abaAnaliseGeral)
+            self.entry_totalInvestido.place(
+                relx=0.545,
+                rely=0.85
+            )
+            self.entry_totalInvestido.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
 Application()
