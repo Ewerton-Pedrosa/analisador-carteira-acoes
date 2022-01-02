@@ -247,7 +247,8 @@ class Application ():
                 )            
             )
         self.cont +=1
-        self.graficos()
+        self.graficos() 
+        self.menuAcoes()       
         self.limpar_entrys()
     def limpar_entrys(self):
         self.entry_acao.delete(0, END)
@@ -327,8 +328,11 @@ class Application ():
                 rely=0.85
             )
             self.entry_totalAcumulado.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
-    def menuAcoes(self):
-        self.cliked = StringVar(self.abaAnaliseIndividual)
-        self.menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
-        self.menu.pack()
+    def menuAcoes(self):  
+        if self.cont != 0: # Cria somente depois da primeira inserção de dados 
+            if self.cont > 1: # destroi se já houver outro menuOption
+                self.menu.destroy()   
+            self.cliked = StringVar(self.abaAnaliseIndividual)
+            self.menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
+            self.menu.pack()
 Application()
