@@ -17,7 +17,8 @@ class Application ():
         self.frames()
         self.widgets()
         self.lista_frameinf()  
-        self.variaveis()          
+        self.variaveis()
+        self.menuAcoes()          
         root.mainloop()    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
@@ -63,12 +64,15 @@ class Application ():
         self.abas = ttk.Notebook(self.frameSup)
         self.abaCadastro = Frame(self.abas)
         self.abaAnaliseGeral = Frame(self.abas)
+        self.abaAnaliseIndividual = Frame(self.abas)
 
         self.abaCadastro.configure(background='#e8f1f2')
         self.abaAnaliseGeral.configure(background='white')
+        self.abaAnaliseIndividual.configure(background='white')
 
         self.abas.add(self.abaCadastro, text='Cadastro')
         self.abas.add(self.abaAnaliseGeral, text='Análise Geral')
+        self.abas.add(self.abaAnaliseIndividual, text='Análise Individual')
 
         self.abas.place(
             relx=0,
@@ -238,7 +242,7 @@ class Application ():
                 self.entry_acao.get().upper(),
                 self.entry_cotas.get(), 
                 self.entry_dataAquisicao.get(),
-                'R$'+str(self.montanteInicial[self.cont]), 
+                f'R${(self.montanteInicial[self.cont]):.2f}', 
                 self.entry_comentarios.get()
                 )            
             )
@@ -249,20 +253,20 @@ class Application ():
         self.entry_acao.delete(0, END)
         self.entry_cotas.delete(0, END)
         self.entry_dataAquisicao.delete(0, END)
-        self.entry_comentarios.delete(0, END)
+        self.entry_comentarios.delete(0, END)  
     def graficos(self):        
-            # -------------------- GRAFICO INVESTIMENTO INICIAL INTEGRADO A ABA ANALISE --------------------
+            # -------------------- GRAFICO INVESTIMENTO INICIAL --------------------
             self.figura = plt.figure(
                 figsize= (6, 3), 
-                dpi=60
+                dpi=70
                 )
             self.grafico = self.figura.add_subplot(111)
             self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseGeral )
             self.canva.get_tk_widget().place(
-                relx=0.01,
+                relx=-0.1,
                 rely=0.01, 
-                relwidth=0.5,
-                relheight=0.5               
+                relwidth=0.65,
+                relheight=0.65               
             )
             plt.pie(
                 x=self.montanteInicial,
@@ -278,49 +282,53 @@ class Application ():
                 background='white'
                 )
             self.lb_totalInvestido.place(
-                relx=0.05,
+                relx=0.17,
                 rely=0.75,                
             )
             self.entry_totalInvestido = Entry(self.abaAnaliseGeral)
             self.entry_totalInvestido.place(
-                relx=0.045,
+                relx=0.17,
                 rely=0.85
             )
             self.entry_totalInvestido.insert(0, f'R$ {sum(self.montanteInicial):.2f}')
-             # -------------------- GRAFICO INVESTIMENTO INICIAL INTEGRADO A ABA ANALISE --------------------
+             # -------------------- GRAFICO INVESTIMENTO ACUMULADO --------------------
             self.figura = plt.figure(
                 figsize= (6, 3), 
-                dpi=60
+                dpi=70
                 )
             self.grafico = self.figura.add_subplot(111)
             self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseGeral )
             self.canva.get_tk_widget().place(
                 relx=0.45,
                 rely=0.01, 
-                relwidth=0.5,
-                relheight=0.5               
+                relwidth=0.65,
+                relheight=0.65               
             )
             plt.pie(
                 x=self.montanteHoje,
-                labels=self.portifolio,
+                labels=self.portifolio, 
                 autopct='%1.1f%%',
                 startangle=90,
                 shadow=True
             )
-            self.lb_totalInvestido = Label(
+            self.lb_totalAcumulado = Label(
                 self.abaAnaliseGeral,
                 text='Total Acumulado',
                 font='helvetica 11 bold',
                 background='white'
                 )
-            self.lb_totalInvestido.place(
-                relx=0.5,
+            self.lb_totalAcumulado.place(
+                relx=0.72,
                 rely=0.75,                
             )
-            self.entry_totalInvestido = Entry(self.abaAnaliseGeral)
-            self.entry_totalInvestido.place(
-                relx=0.545,
+            self.entry_totalAcumulado = Entry(self.abaAnaliseGeral)
+            self.entry_totalAcumulado.place(
+                relx=0.72,
                 rely=0.85
             )
-            self.entry_totalInvestido.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
+            self.entry_totalAcumulado.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
+    def menuAcoes(self):
+        self.cliked = StringVar(self.abaAnaliseIndividual)
+        self.menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
+        self.menu.pack()
 Application()
