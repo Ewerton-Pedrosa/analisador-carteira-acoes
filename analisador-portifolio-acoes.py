@@ -91,25 +91,11 @@ class Application ():
             command= self.lista_dados
         )
         self.bt_cadastrar.place(
-            relx=0.55,
-            rely=0.05,
-            relwidth=0.15,
-            relheight=0.15
-        )
-        self.bt_analise = Button(
-            self.abaCadastro, 
-            text="Análise", 
-            font= "helvetica 10 bold",
-            bd=3,
-            bg="#1e3743",
-            fg='white'
-        )
-        self.bt_analise.place(
             relx=0.7,
             rely=0.05,
             relwidth=0.15,
             relheight=0.15
-        )
+        )        
         self.bt_limpar = Button(
             self.abaCadastro, 
             text="Limpar", 
@@ -328,11 +314,30 @@ class Application ():
                 rely=0.85
             )
             self.entry_totalAcumulado.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
+    def graficosIndividuais(self):
+        print('GRÁFICOS INDIVIDUAIS HEHEHEH')
+        pass
     def menuAcoes(self):  
         if self.cont != 0: # Cria somente depois da primeira inserção de dados 
             if self.cont > 1: # destroi se já houver outro menuOption
                 self.menu.destroy()   
             self.cliked = StringVar(self.abaAnaliseIndividual)
+            self.cliked.set(self.portifolio[0])
             self.menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
             self.menu.pack()
+            self.bt_analise = Button(
+            self.abaAnaliseIndividual, 
+                text="Análise", 
+                font= "helvetica 10 bold",
+                bd=3,
+                bg="#1e3743",
+                fg='white',
+                command=self.graficosIndividuais
+            )
+            self.bt_analise.place(
+                relx=0.85,
+                rely=0.01,
+                relwidth=0.13,
+                relheight=0.13
+            )
 Application()
