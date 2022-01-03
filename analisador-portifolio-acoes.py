@@ -33,6 +33,7 @@ class Application ():
         self.montanteInicial = []
         self.montanteHoje = []
         self.portifolio = []
+        self.dict_acaoDataAquisicao = {}
     def frames(self):
         self.frameSup = Frame(
             self.root, 
@@ -174,7 +175,7 @@ class Application ():
     def lista_frameinf(self):
         self.listaAcoes = ttk.Treeview(
             self.frameInf,
-            height=3,
+            height=7,
             columns=("col1, col2, col3, col4, col5, col6, col7")
         ) 
         self.listaAcoes.heading("#0", text="", anchor=CENTER)
@@ -221,9 +222,10 @@ class Application ():
         self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
         self.montanteHoje.append(round(float(self.cotacaoAcao['Adj Close'].iloc[-1])*int(self.entry_cotas.get()), 2))  
         self.portifolio.append(self.entry_acao.get().upper())
-        print(f'Esse é o montante hoje: R$ {self.montanteHoje}')
-        print(f'Esse é o montante inicial: R$ {self.montanteInicial}') 
-        print(f'Esse é o Portifólio de Ações: {self.portifolio}') 
+        # -------------------- DICIONÁRIO ACAO X DATA AQUISICAO PARA GRAFICOS INDIVIDUAIS --------------------
+        self.dict_acaoDataAquisicao [self.entry_acao.get().upper()] = self.entry_dataAquisicao.get()
+        print(self.dict_acaoDataAquisicao)
+
         # -------------------- DADOS NA TREE VIEW --------------------                       
         self.listaAcoes.insert(
             parent='',
@@ -241,7 +243,7 @@ class Application ():
             )
         self.cont +=1
         self.graficos() 
-        self.menuAcoes()       
+        self.menuAcoes()               
         self.limpar_entrys()
     def limpar_entrys(self):
         self.entry_acao.delete(0, END)
@@ -322,16 +324,24 @@ class Application ():
             )
             self.entry_totalAcumulado.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
     def graficosIndividuais(self):
-        print('GRÁFICOS INDIVIDUAIS HEHEHEH')
-        pass
+        self.cotacaoAcaoIndividual = web.DataReader(
+            self.cliked.get() + '.SA', 
+            data_source='yahoo', 
+            start=self.dict_acaoDataAquisicao[self.cliked.get()], #usar um dicionario key=acao, product=dataAquisicao
+            end=datetime.today().strftime('%m-%d-%Y')
+            )
+        self.cotacaoAcaoIndividual['Adj Close'].plot(figsize=(5,3))
+        plt.show()
+
+        displayhook(self.cotacaoAcaoIndividual)        
     def menuAcoes(self):  
         if self.cont != 0: # Cria somente depois da primeira inserção de dados 
-            if self.cont > 1: # destroi se já houver outro menuOption
-                self.menu.destroy()   
+            if self.cont > 1: # destroi antes de criar o menuOption se já houver outro menuOption
+                self.trv_menu.destroy()   
             self.cliked = StringVar(self.abaAnaliseIndividual)
             self.cliked.set(self.portifolio[0])
-            self.menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
-            self.menu.pack()
+            self.trv_menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
+            self.trv_menu.pack()
             self.bt_analise = Button(
             self.abaAnaliseIndividual, 
                 text="Análise", 
@@ -347,4 +357,5 @@ class Application ():
                 relwidth=0.13,
                 relheight=0.13
             )
+    
 Application()
