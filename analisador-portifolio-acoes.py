@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import font
 from tkinter import ttk
+from numpy import right_shift
 from pandas_datareader import data as web
 from datetime import datetime
 from sys import displayhook
@@ -23,7 +24,7 @@ class Application ():
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
         self.root.configure(background='#1e3743')
-        self.root.geometry("800x550")
+        self.root.geometry("900x550")
         self.root.resizable(True,True)
         self.root.maxsize(width=1200, height=900)
         self.root.minsize(width=650, height=550)
@@ -88,7 +89,7 @@ class Application ():
             bd=3,
             bg="#1e3743",
             fg='white',
-            command= self.lista_dados
+            command= self.cadastro_dados
         )
         self.bt_cadastrar.place(
             relx=0.7,
@@ -174,38 +175,42 @@ class Application ():
         self.listaAcoes = ttk.Treeview(
             self.frameInf,
             height=3,
-            columns=("col1, col2, col3, col4, col5")
+            columns=("col1, col2, col3, col4, col5, col6, col7")
         ) 
         self.listaAcoes.heading("#0", text="", anchor=CENTER)
         self.listaAcoes.heading("#1", text="Código da Ação", anchor=CENTER)
         self.listaAcoes.heading("#2", text="Número de Cotas", anchor=CENTER)
         self.listaAcoes.heading("#3", text="Data de Aquisição", anchor=CENTER)
-        self.listaAcoes.heading("#4", text="Investimento em R$", anchor=CENTER)
-        self.listaAcoes.heading("#5", text="Comentários", anchor=CENTER)
+        self.listaAcoes.heading("#4", text="Investido", anchor=CENTER)
+        self.listaAcoes.heading("#5", text="Acumulado", anchor=CENTER)
+        self.listaAcoes.heading("#6", text="Balanço", anchor=CENTER)
+        self.listaAcoes.heading("#7", text="Comentários", anchor=CENTER)
 
         self.listaAcoes.column("#0", width=1, stretch=NO, anchor=CENTER)
         self.listaAcoes.column("#1", width=110, anchor=CENTER)
-        self.listaAcoes.column("#2", width=80, anchor=CENTER)
+        self.listaAcoes.column("#2", width=100, anchor=CENTER)
         self.listaAcoes.column("#3", width=130, anchor=CENTER)
         self.listaAcoes.column("#4", width=100, anchor=CENTER)
-        self.listaAcoes.column("#5", width=150, anchor=CENTER)
+        self.listaAcoes.column("#5", width=100, anchor=CENTER)
+        self.listaAcoes.column("#6", width=100, anchor=CENTER)
+        self.listaAcoes.column("#7", width=250, anchor=CENTER)
 
         self.listaAcoes.place(
             relx=0.01, 
-            rely=0.1, 
-            relwidth=0.95, 
+            rely=0.01, 
+            relwidth=0.96, 
             relheight=0.85
             )
        
-        self.scrollLista = Scrollbar(self.frameInf, orient='vertical')
-        self.listaAcoes.configure(yscroll=self.scrollLista.set)
-        self.scrollLista.place(
-            relx=0.96,
-            rely=0.1,
-            relwidth=0.04,
-            relheight=0.85
-        )
-    def lista_dados(self):
+        self.scrollListaY = Scrollbar(self.frameInf, orient='vertical', command=self.listaAcoes.yview)
+        self.listaAcoes.configure(yscroll=self.scrollListaY.set)
+        self.scrollListaY.pack(side= RIGHT, fill='y')
+        
+        self.scrollListaX = Scrollbar(self.frameInf, orient='horizontal', command=self.listaAcoes.xview)
+        self.listaAcoes.configure(xscrollcommand=self.scrollListaX.set)
+        self.scrollListaX.pack(side= BOTTOM, fill='x')
+        
+    def cadastro_dados(self):
         # -------------------- CONSULTA API --------------------        
         self.cotacaoAcao = web.DataReader(
             self.entry_acao.get() + '.SA', 
@@ -229,6 +234,8 @@ class Application ():
                 self.entry_cotas.get(), 
                 self.entry_dataAquisicao.get(),
                 f'R${(self.montanteInicial[self.cont]):.2f}', 
+                f'R${(self.montanteHoje[self.cont]):.2f}',
+                f'R${(float(self.montanteHoje[self.cont])-float(self.montanteInicial[self.cont])):.2f}',
                 self.entry_comentarios.get()
                 )            
             )
