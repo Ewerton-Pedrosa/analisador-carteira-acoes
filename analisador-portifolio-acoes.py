@@ -1,12 +1,12 @@
 from tkinter import *
 from tkinter import font
 from tkinter import ttk
-from numpy import right_shift
 from pandas_datareader import data as web
 from datetime import datetime
 from sys import displayhook
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import base64
 
 root = Tk()
 
@@ -19,7 +19,7 @@ class Application ():
         self.widgets()
         self.lista_frameinf()  
         self.variaveis()
-        self.menuAcoes()          
+        self.menuAcoes()                  
         root.mainloop()    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
@@ -33,7 +33,7 @@ class Application ():
         self.montanteInicial = []
         self.montanteHoje = []
         self.portifolio = []
-        self.dict_acaoDataAquisicao = {}
+        self.dict_acaoDataAquisicao = {}    
     def frames(self):
         self.frameSup = Frame(
             self.root, 
@@ -61,7 +61,7 @@ class Application ():
             relwidth=0.96, 
             relheight=0.26
             )
-    def widgets(self):
+    def widgets(self):             
         # -------------------- ABAS --------------------
         self.abas = ttk.Notebook(self.frameSup)
         self.abaCadastro = Frame(self.abas)
@@ -173,42 +173,42 @@ class Application ():
         )
     
     def lista_frameinf(self):
-        self.listaAcoes = ttk.Treeview(
+        self.trv_listaAcoes = ttk.Treeview(
             self.frameInf,
             height=7,
             columns=("col1, col2, col3, col4, col5, col6, col7")
         ) 
-        self.listaAcoes.heading("#0", text="", anchor=CENTER)
-        self.listaAcoes.heading("#1", text="Código da Ação", anchor=CENTER)
-        self.listaAcoes.heading("#2", text="Número de Cotas", anchor=CENTER)
-        self.listaAcoes.heading("#3", text="Data de Aquisição", anchor=CENTER)
-        self.listaAcoes.heading("#4", text="Investido", anchor=CENTER)
-        self.listaAcoes.heading("#5", text="Acumulado", anchor=CENTER)
-        self.listaAcoes.heading("#6", text="Balanço", anchor=CENTER)
-        self.listaAcoes.heading("#7", text="Comentários", anchor=CENTER)
+        self.trv_listaAcoes.heading("#0", text="", anchor=CENTER)
+        self.trv_listaAcoes.heading("#1", text="Código da Ação", anchor=CENTER)
+        self.trv_listaAcoes.heading("#2", text="Número de Cotas", anchor=CENTER)
+        self.trv_listaAcoes.heading("#3", text="Data de Aquisição", anchor=CENTER)
+        self.trv_listaAcoes.heading("#4", text="Investido", anchor=CENTER)
+        self.trv_listaAcoes.heading("#5", text="Acumulado", anchor=CENTER)
+        self.trv_listaAcoes.heading("#6", text="Balanço", anchor=CENTER)
+        self.trv_listaAcoes.heading("#7", text="Comentários", anchor=CENTER)
 
-        self.listaAcoes.column("#0", width=1, stretch=NO, anchor=CENTER)
-        self.listaAcoes.column("#1", width=110, anchor=CENTER)
-        self.listaAcoes.column("#2", width=100, anchor=CENTER)
-        self.listaAcoes.column("#3", width=130, anchor=CENTER)
-        self.listaAcoes.column("#4", width=100, anchor=CENTER)
-        self.listaAcoes.column("#5", width=100, anchor=CENTER)
-        self.listaAcoes.column("#6", width=100, anchor=CENTER)
-        self.listaAcoes.column("#7", width=250, anchor=CENTER)
+        self.trv_listaAcoes.column("#0", width=1, stretch=NO, anchor=CENTER)
+        self.trv_listaAcoes.column("#1", width=110, anchor=CENTER)
+        self.trv_listaAcoes.column("#2", width=100, anchor=CENTER)
+        self.trv_listaAcoes.column("#3", width=130, anchor=CENTER)
+        self.trv_listaAcoes.column("#4", width=100, anchor=CENTER)
+        self.trv_listaAcoes.column("#5", width=100, anchor=CENTER)
+        self.trv_listaAcoes.column("#6", width=100, anchor=CENTER)
+        self.trv_listaAcoes.column("#7", width=250, anchor=CENTER)
 
-        self.listaAcoes.place(
+        self.trv_listaAcoes.place(
             relx=0.01, 
             rely=0.01, 
             relwidth=0.96, 
             relheight=0.85
             )
        
-        self.scrollListaY = Scrollbar(self.frameInf, orient='vertical', command=self.listaAcoes.yview)
-        self.listaAcoes.configure(yscroll=self.scrollListaY.set)
-        self.scrollListaY.pack(side= RIGHT, fill='y')
+        self.scrollListaY = Scrollbar(self.frameInf, orient='vertical', command=self.trv_listaAcoes.yview)
+        self.trv_listaAcoes.configure(yscroll=self.scrollListaY.set)
+        self.scrollListaY.pack(side= RIGHT, fill='y') # o Método Pack foi mais eficaz na criação do scroll
         
-        self.scrollListaX = Scrollbar(self.frameInf, orient='horizontal', command=self.listaAcoes.xview)
-        self.listaAcoes.configure(xscrollcommand=self.scrollListaX.set)
+        self.scrollListaX = Scrollbar(self.frameInf, orient='horizontal', command=self.trv_listaAcoes.xview)
+        self.trv_listaAcoes.configure(xscrollcommand=self.scrollListaX.set)
         self.scrollListaX.pack(side= BOTTOM, fill='x')
         
     def cadastro_dados(self):
@@ -227,7 +227,7 @@ class Application ():
         print(self.dict_acaoDataAquisicao)
 
         # -------------------- DADOS NA TREE VIEW --------------------                       
-        self.listaAcoes.insert(
+        self.trv_listaAcoes.insert(
             parent='',
             index='end', 
             iid=self.cont, 
@@ -237,15 +237,17 @@ class Application ():
                 self.entry_dataAquisicao.get(),
                 f'R${(self.montanteInicial[self.cont]):.2f}', 
                 f'R${(self.montanteHoje[self.cont]):.2f}',
-                f'R${(float(self.montanteHoje[self.cont])-float(self.montanteInicial[self.cont])):.2f}',
+                f'R${(float(self.montanteHoje[self.cont])-float(self.montanteInicial[self.cont])):.2f} ({(((float(self.montanteHoje[self.cont])-float(self.montanteInicial[self.cont]))*100)/float(self.montanteInicial[self.cont])):.2f}%)',
                 self.entry_comentarios.get()
                 )            
             )
         self.cont +=1
         self.graficos() 
         self.menuAcoes()               
-        self.limpar_entrys()
+        #self.limpar_entrys()
     def limpar_entrys(self):
+        self.trv_listaAcoes.delete(self.trv_listaAcoes.selection())
+
         self.entry_acao.delete(0, END)
         self.entry_cotas.delete(0, END)
         self.entry_dataAquisicao.delete(0, END)
@@ -330,18 +332,30 @@ class Application ():
             start=self.dict_acaoDataAquisicao[self.cliked.get()], #usar um dicionario key=acao, product=dataAquisicao
             end=datetime.today().strftime('%m-%d-%Y')
             )
-        self.cotacaoAcaoIndividual['Adj Close'].plot(figsize=(5,3))
-        plt.show()
-
-        displayhook(self.cotacaoAcaoIndividual)        
+       # -------------------- CRIA O ESPAÇO QUE RECEBERÁ O GRÁFICO --------------------
+        self.figura = plt.figure(
+                figsize= (6, 3), 
+                dpi=70
+                )
+        self.grafico = self.figura.add_subplot(111)
+        self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseIndividual )
+        self.canva.get_tk_widget().place(
+            relx=0.15,
+            rely=0.15, 
+            relwidth=0.5,
+            relheight=0.5               
+        )
+        # -------------------- PLOTA O GRÁFICO NO ESPAÇO CRIADO ANTERIORMENTE --------------------
+        self.cotacaoAcaoIndividual['Adj Close'].plot(figsize=(6, 3))
+        
     def menuAcoes(self):  
         if self.cont != 0: # Cria somente depois da primeira inserção de dados 
             if self.cont > 1: # destroi antes de criar o menuOption se já houver outro menuOption
-                self.trv_menu.destroy()   
+                self.menuOption.destroy()   
             self.cliked = StringVar(self.abaAnaliseIndividual)
             self.cliked.set(self.portifolio[0])
-            self.trv_menu = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
-            self.trv_menu.pack()
+            self.menuOption = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
+            self.menuOption.place(relx=0.02, rely=0.02)
             self.bt_analise = Button(
             self.abaAnaliseIndividual, 
                 text="Análise", 
