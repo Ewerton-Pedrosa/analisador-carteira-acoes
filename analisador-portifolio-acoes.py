@@ -27,7 +27,7 @@ class Application ():
         self.root.geometry("900x550")
         self.root.resizable(True,True)
         self.root.maxsize(width=1200, height=900)
-        self.root.minsize(width=650, height=550)
+        self.root.minsize(width=750, height=600)
     def variaveis(self):
         self.cont = 0
         self.montanteInicial = []
@@ -325,6 +325,16 @@ class Application ():
                 rely=0.85
             )
             self.entry_totalAcumulado.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
+            #-------------------- LABEL RENDIMENTO DA CARTEIRA --------------------
+            self.vr_rendimentoCarteira = float((sum(self.montanteHoje))*100/float(sum(self.montanteInicial))-100)
+            self.lb_rendimentoCarteira = Label(
+                self.abaAnaliseGeral,
+                bg='white',
+                text=f'Sua carteira teve um rendimento de {self.vr_rendimentoCarteira:.2f}%',
+                font='helvetica 10 bold'
+            )
+            self.lb_rendimentoCarteira.place(relx=0.35, rely=0.5)
+
     def graficosIndividuais(self):
         self.cotacaoAcaoIndividual = web.DataReader(
             self.cliked.get() + '.SA', 
@@ -340,10 +350,10 @@ class Application ():
         self.grafico = self.figura.add_subplot(111)
         self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseIndividual )
         self.canva.get_tk_widget().place(
-            relx=0.15,
-            rely=0.15, 
+            relx=0.02,
+            rely=0.08, 
             relwidth=0.5,
-            relheight=0.5               
+            relheight=0.85               
         )
         # -------------------- PLOTA O GRÁFICO NO ESPAÇO CRIADO ANTERIORMENTE --------------------
         self.cotacaoAcaoIndividual['Adj Close'].plot(figsize=(6, 3))
