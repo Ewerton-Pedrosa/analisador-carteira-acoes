@@ -21,6 +21,7 @@ class Application ():
         self.variaveis()
         self.menuAcoes()                  
         root.mainloop()    
+    
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
         self.root.configure(background='#1e3743')
@@ -28,12 +29,14 @@ class Application ():
         self.root.resizable(True,True)
         self.root.maxsize(width=1200, height=900)
         self.root.minsize(width=750, height=600)
+    
     def variaveis(self):
         self.cont = 0
         self.montanteInicial = []
         self.montanteHoje = []
         self.portifolio = []
         self.dict_acaoDataAquisicao = {}    
+    
     def frames(self):
         self.frameSup = Frame(
             self.root, 
@@ -61,6 +64,7 @@ class Application ():
             relwidth=0.96, 
             relheight=0.26
             )
+
     def widgets(self):             
         # -------------------- ABAS --------------------
         self.abas = ttk.Notebook(self.frameSup)
@@ -244,20 +248,27 @@ class Application ():
         self.cont +=1
         self.graficos() 
         self.menuAcoes()               
-        #self.limpar_entrys()
-    def limpar_entrys(self):
+        self.limpar_entrys()
+
+    def limpar_entrys(self):            
+        self.entry_acao.delete(0, END)
+        self.entry_cotas.delete(0, END)
+        self.entry_dataAquisicao.delete(0, END)
+        self.entry_comentarios.delete(0, END) 
+
+    def deleteItemTreeView(self):
+        self.cont -= 1 #variável que demarca os endereços de indexação
         self.linhaSelecionada = self.trv_listaAcoes.selection()[0]        
         self.acaoSelecionada = self.trv_listaAcoes.item(self.linhaSelecionada, "values")[0]
         print(self.acaoSelecionada)
         del self.dict_acaoDataAquisicao[self.acaoSelecionada]
         self.trv_listaAcoes.delete(self.linhaSelecionada)
         print(self.dict_acaoDataAquisicao)
-        
-
-        self.entry_acao.delete(0, END)
-        self.entry_cotas.delete(0, END)
-        self.entry_dataAquisicao.delete(0, END)
-        self.entry_comentarios.delete(0, END) 
+        self.montanteInicial.pop(int(self.linhaSelecionada))
+        self.montanteHoje.pop(int(self.linhaSelecionada))
+        self.portifolio.pop(int(self.linhaSelecionada))
+        self.graficos()
+        self.menuAcoes()
 
     def graficos(self):        
             # -------------------- GRAFICO INVESTIMENTO INICIAL --------------------
