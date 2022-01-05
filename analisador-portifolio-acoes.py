@@ -246,12 +246,19 @@ class Application ():
         self.menuAcoes()               
         #self.limpar_entrys()
     def limpar_entrys(self):
-        self.trv_listaAcoes.delete(self.trv_listaAcoes.selection())
+        self.linhaSelecionada = self.trv_listaAcoes.selection()[0]        
+        self.acaoSelecionada = self.trv_listaAcoes.item(self.linhaSelecionada, "values")[0]
+        print(self.acaoSelecionada)
+        del self.dict_acaoDataAquisicao[self.acaoSelecionada]
+        self.trv_listaAcoes.delete(self.linhaSelecionada)
+        print(self.dict_acaoDataAquisicao)
+        
 
         self.entry_acao.delete(0, END)
         self.entry_cotas.delete(0, END)
         self.entry_dataAquisicao.delete(0, END)
-        self.entry_comentarios.delete(0, END)  
+        self.entry_comentarios.delete(0, END) 
+
     def graficos(self):        
             # -------------------- GRAFICO INVESTIMENTO INICIAL --------------------
             self.figura = plt.figure(
