@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import font
+from tkinter import messagebox
 from tkinter import ttk
 from pandas_datareader import data as web
 from datetime import datetime
@@ -24,7 +24,7 @@ class Application ():
     
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
-        self.root.configure(background='#1e3743')
+        self.root.configure(background='#2F4F4F')
         self.root.geometry("900x550")
         self.root.resizable(True,True)
         self.root.maxsize(width=1200, height=900)
@@ -188,7 +188,7 @@ class Application ():
         self.trv_listaAcoes.heading("#3", text="Data de Aquisição", anchor=CENTER)
         self.trv_listaAcoes.heading("#4", text="Investido", anchor=CENTER)
         self.trv_listaAcoes.heading("#5", text="Acumulado", anchor=CENTER)
-        self.trv_listaAcoes.heading("#6", text="Balanço", anchor=CENTER)
+        self.trv_listaAcoes.heading("#6", text="Rendimento", anchor=CENTER)
         self.trv_listaAcoes.heading("#7", text="Comentários", anchor=CENTER)
 
         self.trv_listaAcoes.column("#0", width=1, stretch=NO, anchor=CENTER)
@@ -197,7 +197,7 @@ class Application ():
         self.trv_listaAcoes.column("#3", width=130, anchor=CENTER)
         self.trv_listaAcoes.column("#4", width=100, anchor=CENTER)
         self.trv_listaAcoes.column("#5", width=100, anchor=CENTER)
-        self.trv_listaAcoes.column("#6", width=100, anchor=CENTER)
+        self.trv_listaAcoes.column("#6", width=120, anchor=CENTER)
         self.trv_listaAcoes.column("#7", width=250, anchor=CENTER)
 
         self.trv_listaAcoes.place(
@@ -217,19 +217,22 @@ class Application ():
         
     def cadastro_dados(self):
         # -------------------- CONSULTA API --------------------        
-        self.cotacaoAcao = web.DataReader(
-            self.entry_acao.get() + '.SA', 
-            data_source='yahoo', 
-            start=self.entry_dataAquisicao.get(), 
-            end=datetime.today().strftime('%m-%d-%Y')
-            )
+        try:
+            self.cotacaoAcao = web.DataReader(
+                self.entry_acao.get() + '.SA', 
+                data_source='yahoo', 
+                start=self.entry_dataAquisicao.get(), 
+                end=datetime.today().strftime('%m-%d-%Y')
+                )
+        except:
+            messagebox.showerror(title='ERRO', message='Verifique os dados de entrada e tente novamente')            
+        # -------------------- LISTAS PARA GRAFICOS PIZZA --------------------    
         self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
         self.montanteHoje.append(round(float(self.cotacaoAcao['Adj Close'].iloc[-1])*int(self.entry_cotas.get()), 2))  
         self.portifolio.append(self.entry_acao.get().upper())
         # -------------------- DICIONÁRIO ACAO X DATA AQUISICAO PARA GRAFICOS INDIVIDUAIS --------------------
         self.dict_acaoDataAquisicao [self.entry_acao.get().upper()] = self.entry_dataAquisicao.get()
         print(self.dict_acaoDataAquisicao)
-
         # -------------------- DADOS NA TREE VIEW --------------------                       
         self.trv_listaAcoes.insert(
             parent='',
@@ -375,6 +378,11 @@ class Application ():
         )
         # -------------------- PLOTA O GRÁFICO NO ESPAÇO CRIADO ANTERIORMENTE --------------------
         self.cotacaoAcaoIndividual['Adj Close'].plot(figsize=(6, 3))
+        # -------------------- CRIA LABEL COM RESUMO DO RENDIMENTO --------------------
+        self.lb_rendimentoIndividual = Label(
+            self.abaAnaliseIndividual,
+
+        )
         
     def menuAcoes(self):  
         if self.cont != 0: # Cria somente depois da primeira inserção de dados 
