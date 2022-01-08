@@ -25,7 +25,7 @@ class Application ():
     def tela(self):
         self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
         self.root.configure(background='#2F4F4F')
-        self.root.geometry("900x550")
+        self.root.geometry("900x600")
         self.root.resizable(True,True)
         self.root.maxsize(width=1200, height=900)
         self.root.minsize(width=750, height=600)
@@ -109,7 +109,7 @@ class Application ():
             bd=3,
             bg="#1e3743",
             fg='white',
-            command=self.limpar_entrys
+            command=self.deleteItemTreeView
         )
         self.bt_limpar.place(
             relx=0.85,
@@ -289,11 +289,11 @@ class Application ():
             )
             plt.pie(
                 x=self.montanteInicial,
-                labels=self.portifolio,
+                labels=self.portifolio,                
                 autopct='%1.1f%%',
                 startangle=90,
                 shadow=True
-                )
+                )            
             self.lb_totalInvestido = Label(
                 self.abaAnaliseGeral,
                 text='Total Investido',
@@ -358,12 +358,13 @@ class Application ():
 
     def graficosIndividuais(self):
         self.cotacaoAcaoIndividual = web.DataReader(
-            self.cliked.get() + '.SA', 
+            self.acaoEscolhida.get() + '.SA', 
             data_source='yahoo', 
-            start=self.dict_acaoDataAquisicao[self.cliked.get()], #usar um dicionario key=acao, product=dataAquisicao
+            start=self.dict_acaoDataAquisicao[self.acaoEscolhida.get()], #usar um dicionario key=acao, product=dataAquisicao
             end=datetime.today().strftime('%m-%d-%Y')
             )
-       # -------------------- CRIA O ESPAÇO QUE RECEBERÁ O GRÁFICO --------------------
+        displayhook(self.cotacaoAcaoIndividual)
+       # -------------------- CRIA O ESPAÇO QUE RECEBERÁ O GRÁFICO DE LINHA --------------------
         self.figura = plt.figure(
                 figsize= (6, 3), 
                 dpi=70
@@ -372,25 +373,39 @@ class Application ():
         self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseIndividual )
         self.canva.get_tk_widget().place(
             relx=0.02,
-            rely=0.08, 
+            rely=0.1, 
             relwidth=0.5,
             relheight=0.85               
         )
-        # -------------------- PLOTA O GRÁFICO NO ESPAÇO CRIADO ANTERIORMENTE --------------------
+        # -------------------- PLOTA O GRÁFICO DE LINHA NO ESPAÇO CRIADO ANTERIORMENTE --------------------
         self.cotacaoAcaoIndividual['Adj Close'].plot(figsize=(6, 3))
-        # -------------------- CRIA LABEL COM RESUMO DO RENDIMENTO --------------------
-        self.lb_rendimentoIndividual = Label(
-            self.abaAnaliseIndividual,
-
+        plt.ylabel("PREÇO POR COTA EM R$", fontsize=11)
+        plt.xlabel("DATA", fontsize=11)              
+         # -------------------- CRIA O ESPAÇO QUE RECEBERÁ O GRÁFICO DE BARRA --------------------
+        self.figura = plt.figure(
+                figsize= (6, 3), 
+                dpi=70
+                )
+        self.grafico = self.figura.add_subplot(111)
+        self.canva = FigureCanvasTkAgg(self.figura, self.abaAnaliseIndividual )
+        self.canva.get_tk_widget().place(
+            relx=0.53,
+            rely=0.1, 
+            relwidth=0.5,
+            relheight=0.85  
         )
-        
+        # -------------------- PLOTA O GRÁFICO DE BARRA NO ESPAÇO CRIADO ANTERIORMENTE --------------------
+        self.cotacaoAcaoIndividual['Volume'].plot(figsize=(6,3))
+        plt.ylabel("VOLUME DE AÇÕES NEGOCIADAS", fontsize= 11)
+        plt.xlabel("DATA", fontsize= 11)
+
     def menuAcoes(self):  
         if self.cont != 0: # Cria somente depois da primeira inserção de dados 
             if self.cont > 1: # destroi antes de criar o menuOption se já houver outro menuOption
                 self.menuOption.destroy()   
-            self.cliked = StringVar(self.abaAnaliseIndividual)
-            self.cliked.set(self.portifolio[0])
-            self.menuOption = OptionMenu(self.abaAnaliseIndividual, self.cliked, *self.portifolio)
+            self.acaoEscolhida = StringVar(self.abaAnaliseIndividual)
+            self.acaoEscolhida.set(self.portifolio[0])
+            self.menuOption = OptionMenu(self.abaAnaliseIndividual, self.acaoEscolhida, *self.portifolio)
             self.menuOption.place(relx=0.02, rely=0.02)
             self.bt_analise = Button(
             self.abaAnaliseIndividual, 
@@ -404,8 +419,8 @@ class Application ():
             self.bt_analise.place(
                 relx=0.85,
                 rely=0.01,
-                relwidth=0.13,
-                relheight=0.13
+                relwidth=0.1,
+                relheight=0.1
             )
     
 Application()
