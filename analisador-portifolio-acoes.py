@@ -6,7 +6,6 @@ from datetime import datetime
 from sys import displayhook
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import base64
 
 root = Tk()
 
@@ -32,10 +31,12 @@ class Application ():
     
     def variaveis(self):
         self.cont = 0
+        self.iidCont = int(0)
         self.montanteInicial = []
         self.montanteHoje = []
         self.portifolio = []
-        self.dict_acaoDataAquisicao = {}    
+        self.dict_acaoDataAquisicao = {}   
+        self.acesso = False 
     
     def frames(self):
         self.frameSup = Frame(
@@ -225,7 +226,8 @@ class Application ():
                 end=datetime.today().strftime('%m-%d-%Y')
                 )
         except:
-            messagebox.showerror(title='ERRO', message='Verifique os dados de entrada e tente novamente')            
+            messagebox.showerror(title='ERRO', message='Verifique os dados de entrada e tente novamente')  
+            return 0 #Não prossegue com a execução do programa          
         # -------------------- LISTAS PARA GRAFICOS PIZZA --------------------    
         self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
         self.montanteHoje.append(round(float(self.cotacaoAcao['Adj Close'].iloc[-1])*int(self.entry_cotas.get()), 2))  
@@ -233,11 +235,12 @@ class Application ():
         # -------------------- DICIONÁRIO ACAO X DATA AQUISICAO PARA GRAFICOS INDIVIDUAIS --------------------
         self.dict_acaoDataAquisicao [self.entry_acao.get().upper()] = self.entry_dataAquisicao.get()
         print(self.dict_acaoDataAquisicao)
-        # -------------------- DADOS NA TREE VIEW --------------------                       
+        # -------------------- DADOS NA TREE VIEW -------------------- 
+                    
         self.trv_listaAcoes.insert(
             parent='',
             index='end', 
-            iid=self.cont, 
+            iid= self.iidCont, 
             values=(
                 self.entry_acao.get().upper(),
                 self.entry_cotas.get(), 
@@ -247,8 +250,11 @@ class Application ():
                 f'R${(float(self.montanteHoje[self.cont])-float(self.montanteInicial[self.cont])):.2f} ({(((float(self.montanteHoje[self.cont])-float(self.montanteInicial[self.cont]))*100)/float(self.montanteInicial[self.cont])):.2f}%)',
                 self.entry_comentarios.get()
                 )            
-            )
-        self.cont +=1
+            )                      
+                
+      
+        self.iidCont +=1 
+        self.cont +=1        
         self.graficos() 
         self.menuAcoes()               
         self.limpar_entrys()
@@ -260,20 +266,25 @@ class Application ():
         self.entry_comentarios.delete(0, END) 
 
     def deleteItemTreeView(self):
-        self.cont -= 1 #variável que demarca os endereços de indexação
+        
         self.linhaSelecionada = self.trv_listaAcoes.selection()[0]        
-        self.acaoSelecionada = self.trv_listaAcoes.item(self.linhaSelecionada, "values")[0]
-        print(self.acaoSelecionada)
-        del self.dict_acaoDataAquisicao[self.acaoSelecionada]
+        self.acaoSelecionada = self.trv_listaAcoes.item(self.linhaSelecionada, "values")[0] 
+        self.indexDict = list(self.dict_acaoDataAquisicao.keys()).index(self.acaoSelecionada)                
         self.trv_listaAcoes.delete(self.linhaSelecionada)
-        print(self.dict_acaoDataAquisicao)
-        self.montanteInicial.pop(int(self.linhaSelecionada))
-        self.montanteHoje.pop(int(self.linhaSelecionada))
-        self.portifolio.pop(int(self.linhaSelecionada))
+        print(f'linha selecionada {self.indexDict}')
+        print(f'contador {self.cont}')
+        self.montanteInicial.pop(int(self.indexDict))
+        self.montanteHoje.pop(int(self.indexDict))
+        self.portifolio.pop(int(self.indexDict))
+        del self.dict_acaoDataAquisicao[self.acaoSelecionada] #Deleta item do dicio
+        print(f'DICIO APÓS DELETE {self.dict_acaoDataAquisicao}')
         self.graficos()
         self.menuAcoes()
+        self.cont -= 1  #variável que demarca os endereços de indexação
 
-    def graficos(self):        
+    def graficos(self):   
+            if self.cont > 1:
+                plt.close(self.figura)     
             # -------------------- GRAFICO INVESTIMENTO INICIAL --------------------
             self.figura = plt.figure(
                 figsize= (6, 3), 
