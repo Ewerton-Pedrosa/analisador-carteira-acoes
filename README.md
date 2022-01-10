@@ -18,6 +18,7 @@ Já na segunda aba, análise individual, temos um mecanismo que consulta a API n
 - Data Frames
 - GUI Tkinter
 - Biblioteca Pandas
+- API
 - Classes e Funções
 - Diversos métodos
 - Depuração de código
