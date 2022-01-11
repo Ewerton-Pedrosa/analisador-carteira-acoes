@@ -22,7 +22,7 @@ class Application ():
         root.mainloop()    
     
     def tela(self):
-        self.root.title("Analisador de Portifólio de Ações - Ewerton Diniz")
+        self.root.title("Analisador de Portifólio de Ações - Ewerton Pedrosa")
         self.root.configure(background='#2F4F4F')
         self.root.geometry("900x600")
         self.root.resizable(True,True)
@@ -105,7 +105,7 @@ class Application ():
         )        
         self.bt_limpar = Button(
             self.abaCadastro, 
-            text="Limpar", 
+            text="Delete", 
             font= "helvetica 10 bold",
             bd=3,
             bg="#1e3743",
@@ -127,6 +127,7 @@ class Application ():
         self.lb_acao.place(
             relx=0.01, 
             rely=0.1
+            
             )
         self.entry_acao = Entry(self.abaCadastro)
         self.entry_acao.place(
@@ -154,12 +155,12 @@ class Application ():
             )
         self.lb_dataAquisicao.place(
             relx=0.01, 
-            rely=0.5
+            rely=0.5            
             )
         self.entry_dataAquisicao = Entry(self.abaCadastro)
         self.entry_dataAquisicao.place(
             relx=0.01,
-            rely=0.6
+            rely=0.6            
         )
         self.lb_comentarios = Label(
             self.abaCadastro, 
@@ -226,7 +227,14 @@ class Application ():
                 end=datetime.today().strftime('%m-%d-%Y')
                 )
         except:
-            messagebox.showerror(title='ERRO', message='Verifique os dados de entrada e tente novamente')  
+            messagebox.showerror(
+                title='ERRO', 
+                message=
+            '''Verifique os dados de entrada: 
+            Código da ação correto
+            Quantidade de cotas maior que 0
+            Data no formato MM-DD-AAAA
+            ''')  
             return 0 #Não prossegue com a execução do programa          
         # -------------------- LISTAS PARA GRAFICOS PIZZA --------------------    
         self.montanteInicial.append(round(float(self.cotacaoAcao['Adj Close'].iloc[0])*int(self.entry_cotas.get()), 2))
@@ -271,13 +279,13 @@ class Application ():
         self.acaoSelecionada = self.trv_listaAcoes.item(self.linhaSelecionada, "values")[0] 
         self.indexDict = list(self.dict_acaoDataAquisicao.keys()).index(self.acaoSelecionada)                
         self.trv_listaAcoes.delete(self.linhaSelecionada)
-        print(f'linha selecionada {self.indexDict}')
-        print(f'contador {self.cont}')
+        #print(f'linha selecionada {self.indexDict}')
+        #print(f'contador {self.cont}')
         self.montanteInicial.pop(int(self.indexDict))
         self.montanteHoje.pop(int(self.indexDict))
         self.portifolio.pop(int(self.indexDict))
         del self.dict_acaoDataAquisicao[self.acaoSelecionada] #Deleta item do dicio
-        print(f'DICIO APÓS DELETE {self.dict_acaoDataAquisicao}')
+        #print(f'DICIO APÓS DELETE {self.dict_acaoDataAquisicao}')
         self.graficos()
         self.menuAcoes()
         self.cont -= 1  #variável que demarca os endereços de indexação
@@ -358,7 +366,11 @@ class Application ():
             )
             self.entry_totalAcumulado.insert(0, f'R$ {sum(self.montanteHoje):.2f}')
             #-------------------- LABEL RENDIMENTO DA CARTEIRA --------------------
-            self.vr_rendimentoCarteira = float((sum(self.montanteHoje))*100/float(sum(self.montanteInicial))-100)
+            try:
+                self.vr_rendimentoCarteira = float((sum(self.montanteHoje))*100/float(sum(self.montanteInicial))-100)
+            except ZeroDivisionError:
+                pass #Solucionar Bug de quando remove todas as ações da TreeView (EM ANDAMENTO)
+            
             self.lb_rendimentoCarteira = Label(
                 self.abaAnaliseGeral,
                 bg='white',
